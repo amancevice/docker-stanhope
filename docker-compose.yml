@@ -2,6 +2,6 @@ version: '2'
 services:
   stanhope:
     image: amancevice/stanhope
-    build: .
+    # build: .
     volumes:
       - "~/Downloads:/data"
