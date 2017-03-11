@@ -1,0 +1,8 @@
+version: '2'
+services:
+  stanhope:
+    image: amancevice/stanhope
+    build: .
+    volumes:
+      - "./data/:/data"
+      - "./stanhope:/stanhope"
