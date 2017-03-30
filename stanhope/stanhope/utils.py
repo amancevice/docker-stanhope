@@ -79,7 +79,7 @@ def status(value):
     return mapping(value, **{
         'O': 'Open',
         'C': 'Closed',
-        'A': 'Archived',
+        'A': 'Closed',
         'X': 'Closed'})
 
 
@@ -137,8 +137,8 @@ def inches(value):
 
 def fraction(value):
     try:
-        dimen = dimen(value)
-        frac = str(dimen - int(dimen))
-        return ' {}\''.format(frac) if frac != '0' else '"'
-    except:
+        dim = dimen(value)
+        frac = str(dim - int(dim))
+        return '.{}\"'.format(frac) if frac != '0' else '"'
+    except Exception as err:
         return '"'
