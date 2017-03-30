@@ -98,7 +98,6 @@ class Contacts(LegacyCustomers):
         'Email',
         'Deceased']
     COLUMNS = [
-        'Legacy Customer Number',
         'Contact',
         'Email',
         'Address',
@@ -106,12 +105,14 @@ class Contacts(LegacyCustomers):
         'State',
         'Zip',
         'Telephone',
-        'Deceased']
+        'Deceased',
+        'Account Link']
 
     def read_csv(self, *args, **kwargs):
         frame = super(Contacts, self).read_csv(converters=self.CONVERTERS,
                                                names=self.HEADER,
                                                skiprows=1)
+        frame['Account Link'] = frame['Legacy Customer Number']
         return frame[self.COLUMNS]
 
 
@@ -170,21 +171,21 @@ class Orders(LegacyOrders):
         'Fitting']
     COLUMNS = [
         'Order Number',
-        'Account Link',
-        'Salesperson',
         'Order Date',
         'Due Date',
         'Order Location',
         'Order Status',
         'Delivery Location',
-        'Legacy Order Number Link',
-        'Legacy Customer Number']
+        'Account Link',
+        'Salesperson Link',
+        'Legacy Order Number Link']
 
     def read_csv(self, *args, **kwargs):
         frame = super(Orders, self).read_csv(converters=self.CONVERTERS,
                                              names=self.HEADER,
                                              skiprows=1)
         frame['Account Link'] = frame['Legacy Customer Number']
+        frame['Salesperson Link'] = frame['Salesperson']
         frame['Legacy Order Number Link'] = frame['Order Number']
         return frame[self.COLUMNS]
 
@@ -229,7 +230,6 @@ class Treatments(LegacyOrders):
         'Matting',
         'Fitting']
     COLUMNS = [
-        'Order Number',
         'Order Status',
         'Type',
         'Quantity',
@@ -252,12 +252,14 @@ class Treatments(LegacyOrders):
         'Price',
         'Artist',
         'Description',
-        'Production Comments']
+        'Production Comments',
+        'Order Link']
 
     def read_csv(self, *args, **kwargs):
         frame = super(Treatments, self).read_csv(converters=self.CONVERTERS,
                                                  names=self.HEADER,
                                                  skiprows=1)
+        frame['Order Link'] = frame['Order Number']
         frame['Frame Width Inches'] = \
             frame['Frame Width'].apply(utils.inches)
         frame['Frame Width Fraction'] = \
