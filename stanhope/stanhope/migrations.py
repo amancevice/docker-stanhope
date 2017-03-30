@@ -118,9 +118,8 @@ class Contacts(LegacyCustomers):
 class LegacyOrders(Migration):
     TABLES = [
         'FrameOrders-Working',
-        # 'FrameOrders-Closed',
-        # 'FrameOrders-Archive'
-    ]
+        'FrameOrders-Closed',
+        'FrameOrders-Archive']
     CONVERTERS = {
         'DateCompleted': utils.knackstamp,
         'DueDate': utils.knackstamp,

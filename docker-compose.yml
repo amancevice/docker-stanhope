@@ -4,4 +4,4 @@ services:
     image: amancevice/stanhope
     # build: .
     volumes:
-      - "~/Downloads:/data"
+      - ./data:/data
