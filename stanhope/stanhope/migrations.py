@@ -185,6 +185,7 @@ class Orders(LegacyOrders):
         'Order Location',
         'Order Status',
         'Delivery Location',
+        'Legacy Order Account Number',
         'Account Link',
         'Salesperson Link',
         'Legacy Order Number Link']
@@ -196,8 +197,11 @@ class Orders(LegacyOrders):
         frame['Account Link'] = frame['Legacy Customer Number']
         frame['Salesperson Link'] = frame['Salesperson']
         frame['Legacy Order Number Link'] = frame['Order Number']
-        frame.loc['Delivery Location'] = \
+        frame.loc[:, 'Delivery Location'] = \
             frame['Delivery Location'].combine_first(frame['Order Location'])
+        frame['Legacy Order Account Number'] = \
+            frame.apply(lambda x: "{}-{}".format(
+                x['Order Number'], x['Legacy Customer Number']), axis=1)
         return frame[self.COLUMNS]
 
 
@@ -271,7 +275,6 @@ class Treatments(LegacyOrders):
         frame = super(Treatments, self).read_csv(converters=self.CONVERTERS,
                                                  names=self.HEADER,
                                                  skiprows=1)
-        frame['Order Link'] = frame['Order Number']
         frame['Frame Width Inches'] = \
             frame['Frame Width'].apply(utils.inches)
         frame['Frame Width Fraction'] = \
@@ -280,4 +283,7 @@ class Treatments(LegacyOrders):
             frame['Frame Height'].apply(utils.inches)
         frame['Frame Height Fraction'] = \
             frame['Frame Height'].apply(utils.fraction)
+        frame['Order Link'] = \
+            frame.apply(lambda x: "{}-{}".format(
+                x['Order Number'], x['CustomerNo']), axis=1)
         return frame[self.COLUMNS]
