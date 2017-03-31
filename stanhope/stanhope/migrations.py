@@ -235,7 +235,7 @@ class Treatments(LegacyOrders):
         'Mat Size',
         'Glazing',
         'Production Comments',
-        'BinNo',
+        'Bin Number',
         'Matting',
         'Fitting']
     COLUMNS = [
@@ -260,6 +260,7 @@ class Treatments(LegacyOrders):
         # 'Glazing',
         'Price',
         'Artist',
+        'Bin Number',
         'Description',
         'Production Comments',
         'Order Link']
