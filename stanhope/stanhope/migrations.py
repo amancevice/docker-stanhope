@@ -196,6 +196,8 @@ class Orders(LegacyOrders):
         frame['Account Link'] = frame['Legacy Customer Number']
         frame['Salesperson Link'] = frame['Salesperson']
         frame['Legacy Order Number Link'] = frame['Order Number']
+        frame.loc['Delivery Location'] = \
+            frame['Delivery Location'].combine_first(frame['Order Location'])
         return frame[self.COLUMNS]
 
 
