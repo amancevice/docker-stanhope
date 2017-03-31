@@ -1,6 +1,7 @@
 """ Stanhope Framers Utils. """
 import fractions
 import io
+import re
 import subprocess
 
 import pandas
@@ -41,7 +42,15 @@ def knackstamp(value):
 
 @try_or_nan
 def upper(value):
-    return value.upper()
+    return value.upper().strip('\n')
+
+
+@try_or_nan
+def replace_newline(value, replace=r' '):
+    return re.subn('[\n\r]+', replace, value)[0]\
+             .replace(u'\x0b', replace)\
+             .replace(u'\x10', replace)\
+             .strip()
 
 
 @try_or_nan

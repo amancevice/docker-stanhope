@@ -40,7 +40,8 @@ class LegacyCustomers(Migration):
 
 class Accounts(LegacyCustomers):
     CONVERTERS = {
-        'Legacy Customer Number': utils.upper}
+        'Legacy Customer Number': utils.upper,
+        'Account': utils.replace_newline}
     HEADER = [
         'Legacy Customer Number',
         'Account',
@@ -78,7 +79,13 @@ class Accounts(LegacyCustomers):
 
 class Contacts(LegacyCustomers):
     CONVERTERS = {
-        'Legacy Customer Number': utils.upper}
+        'Legacy Customer Number': utils.upper,
+        'Contact': utils.replace_newline,
+        'Address': utils.replace_newline,
+        'City': utils.replace_newline,
+        'State': utils.replace_newline,
+        'Zip': utils.replace_newline,
+        'Telephone': utils.replace_newline}
     HEADER = [
         'Legacy Customer Number',
         'Contact',
@@ -113,6 +120,7 @@ class Contacts(LegacyCustomers):
                                                names=self.HEADER,
                                                skiprows=1)
         frame['Account Link'] = frame['Legacy Customer Number']
+        frame.loc[frame['Contact'] == 'Bridget Wilson', 'City'] = 'Boston'
         return frame[self.COLUMNS]
 
 
@@ -122,6 +130,7 @@ class LegacyOrders(Migration):
         'FrameOrders-Closed',
         'FrameOrders-Archive']
     CONVERTERS = {
+        'Order Number': utils.upper,
         'DateCompleted': utils.knackstamp,
         'DueDate': utils.knackstamp,
         'OrderDate': utils.knackstamp}
