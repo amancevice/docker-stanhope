@@ -151,3 +151,7 @@ def fraction(value):
         return '.{}\"'.format(frac) if frac != '0' else '"'
     except Exception as err:
         return '"'
+
+
+def boolean(value):
+    return value == '1'

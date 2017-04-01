@@ -41,7 +41,9 @@ class LegacyCustomers(Migration):
 class Accounts(LegacyCustomers):
     CONVERTERS = {
         'Legacy Customer Number': utils.upper,
-        'Account': utils.replace_newline}
+        'Account': utils.replace_newline,
+        'Tax Exempt': utils.boolean,
+        'Credit': utils.boolean}
     HEADER = [
         'Legacy Customer Number',
         'Account',
@@ -85,7 +87,8 @@ class Contacts(LegacyCustomers):
         'City': utils.replace_newline,
         'State': utils.replace_newline,
         'Zip': utils.replace_newline,
-        'Telephone': utils.replace_newline}
+        'Telephone': utils.replace_newline,
+        'Deceased': utils.boolean}
     HEADER = [
         'Legacy Customer Number',
         'Contact',
@@ -182,6 +185,7 @@ class Orders(LegacyOrders):
         'Order Number',
         'Order Date',
         'Due Date',
+        'Client',
         'Order Location',
         'Order Status',
         'Delivery Location',
@@ -194,6 +198,7 @@ class Orders(LegacyOrders):
         frame = super(Orders, self).read_csv(converters=self.CONVERTERS,
                                              names=self.HEADER,
                                              skiprows=1)
+        frame['Client'] = 'None'
         frame['Account Link'] = frame['Legacy Customer Number']
         frame['Salesperson Link'] = frame['Salesperson']
         frame['Legacy Order Number Link'] = frame['Order Number']
