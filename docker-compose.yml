@@ -4,4 +4,4 @@ services:
     image: amancevice/stanhope
     # build: .
     volumes:
-      - ./data:/data
+      - ~/Google Drive/Stanhope:/data
