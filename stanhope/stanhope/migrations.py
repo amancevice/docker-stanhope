@@ -222,6 +222,7 @@ class Orders(LegacyOrders):
                                              'Account Link')
         frame['Salesperson Link'] = frame['Salesperson']
         frame['Legacy Order Link'] = frame['Order ID']
+        frame.loc[frame['Discount'].isnull(), 'Discount'] = 'No Discount'
         frame.loc[:, 'Delivery Location'] = \
             frame['Delivery Location'].combine_first(frame['Order Location'])
         return frame[self.COLUMNS]
