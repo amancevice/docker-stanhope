@@ -155,3 +155,8 @@ def fraction(value):
 
 def boolean(value):
     return value == '1'
+
+
+def order_link(frame, order_col, acct_col):
+    return frame.apply(lambda x: "{}-{}".format(x[order_col], x[acct_col]),
+                       axis=1)
