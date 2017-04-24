@@ -58,6 +58,26 @@ def mapping(value, **mapping):
     return mapping[value]
 
 
+def source(value):
+    return mapping(value.strip().strip('.').upper(), **{
+        'ART NE': 'Art New England',
+        'BAY WIN': 'BAY WIN',
+        'CN': 'CN',
+        'CO REF': 'CO REF',
+        'COUPON': 'Coupon',
+        'CR': 'CR',
+        'PC': 'PC',
+        'SMFA SALE': 'SMFA Sale',
+        'WBUR': 'WBUR',
+        'WEB': 'Web',
+        'WI': 'Walk In',
+        'WLK IN': 'Walk In',
+        'WLK': 'Walk In',
+        'YLW BK': 'Yellow Pages',
+        'YLW PG': 'Yellow Pages',
+        'YP': 'Yellow Pages'})
+
+
 def delivery_location(value):
     return mapping(value, **{'UPS': 'Delivery', 'PU BOS': 'Boston'})
 
@@ -82,6 +102,12 @@ def discount(value):
 
 def order_location(value):
     return mapping(value, BOS='Boston', SOM='Somerville')
+
+
+def salesperson(value):
+    if pandas.isnull(value):
+        return 'RS'
+    return value
 
 
 def status(value):
@@ -147,6 +173,8 @@ def inches(value):
 def fraction(value):
     try:
         dim = dimen(value)
+        if dim.denominator not in [2, 4, 8, 16]:
+            raise ValueError
         frac = str(dim - int(dim))
         return '.{}\"'.format(frac) if frac != '0' else '"'
     except Exception as err:
@@ -160,3 +188,13 @@ def boolean(value):
 def order_link(frame, order_col, acct_col):
     return frame.apply(lambda x: "{}-{}".format(x[order_col], x[acct_col]),
                        axis=1)
+
+
+def dimens_string(row):
+    if pandas.isnull(row['Frame Width Inches']) or \
+       pandas.isnull(row['Frame Height Inches']):
+        return pandas.np.nan
+    return "{win}{wfr} x {hin}{hfr}".format(win=int(row['Frame Width Inches']),
+                                            wfr=row['Frame Width Fraction'],
+                                            hin=int(row['Frame Height Inches']),
+                                            hfr=row['Frame Height Fraction'])

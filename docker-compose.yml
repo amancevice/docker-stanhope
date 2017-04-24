@@ -5,3 +5,4 @@ services:
     # build: .
     volumes:
       - ~/Google Drive/Stanhope:/data
+      - ./stanhope:/stanhope

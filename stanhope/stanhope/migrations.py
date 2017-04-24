@@ -45,6 +45,7 @@ class Accounts(LegacyCustomers):
         'Legacy Customer Number': utils.upper,
         'Account': utils.replace_newline,
         'Tax Exempt': utils.boolean,
+        'Source': utils.source,
         'Credit': utils.boolean}
     HEADER = [
         'Legacy Customer Number',
@@ -69,6 +70,8 @@ class Accounts(LegacyCustomers):
         'Account',
         'Tax Exempt',
         'Credit',
+        'Comment',
+        'Source',
         'Legacy Customer Number',
         'Legacy Customer Number Link']
 
@@ -164,7 +167,8 @@ class Orders(LegacyOrders):
         'Order Date': utils.knackstamp,
         'Order Location': utils.order_location,
         'Order Number': utils.upper,
-        'Order Status': utils.status}
+        'Order Status': utils.status,
+        'Salesperson': utils.salesperson}
     HEADER = [
         'Order Number',
         'Order Date',
@@ -272,6 +276,7 @@ class Treatments(LegacyOrders):
         'Order Status',
         'Type',
         'Quantity',
+        'Frame Dimensions',
         'Frame Width Inches',
         'Frame Width Fraction',
         'Frame Height Inches',
@@ -310,4 +315,5 @@ class Treatments(LegacyOrders):
         frame['Order Link'] = utils.order_link(frame,
                                                'Order Number',
                                                'CustomerNo')
+        frame['Frame Dimensions'] = frame.apply(utils.dimens_string, axis=1)
         return frame[self.COLUMNS]
