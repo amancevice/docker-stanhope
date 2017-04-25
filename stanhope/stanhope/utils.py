@@ -107,6 +107,8 @@ def order_location(value):
 def salesperson(value):
     if pandas.isnull(value):
         return 'RS'
+    elif value == 'SN':
+        return 'SB'
     return value
 
 
@@ -188,19 +190,3 @@ def boolean(value):
 def order_link(frame, order_col, acct_col):
     return frame.apply(lambda x: "{}-{}".format(x[order_col], x[acct_col]),
                        axis=1)
-
-
-def dimens_string(row):
-    if pandas.isnull(row['Frame Width Inches']) or \
-       pandas.isnull(row['Frame Height Inches']):
-        return pandas.np.nan
-    win = int(row['Frame Width Inches'])
-    hin = int(row['Frame Height Inches'])
-    wfr = row['Frame Width Fraction']
-    hfr = row['Frame Height Fraction']
-    wfr = '' if pandas.isnull(wfr) else wfr
-    hfr = '' if pandas.isnull(hfr) else hfr
-    return "{win}{wfr}\" x {hin}{hfr}\"".format(win=win,
-                                                wfr=wfr,
-                                                hin=hin,
-                                                hfr=hfr)

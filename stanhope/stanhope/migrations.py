@@ -276,7 +276,6 @@ class Treatments(LegacyOrders):
         'Order Status',
         'Type',
         'Quantity',
-        'Frame Dimensions',
         'Frame Width Inches',
         'Frame Width Fraction',
         'Frame Height Inches',
@@ -315,5 +314,4 @@ class Treatments(LegacyOrders):
         frame['Order Link'] = utils.order_link(frame,
                                                'Order Number',
                                                'CustomerNo')
-        frame['Frame Dimensions'] = frame.apply(utils.dimens_string, axis=1)
         return frame[self.COLUMNS]
