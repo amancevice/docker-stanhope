@@ -176,9 +176,9 @@ def fraction(value):
         if dim.denominator not in [2, 4, 8, 16]:
             raise ValueError
         frac = str(dim - int(dim))
-        return '.{}\"'.format(frac) if frac != '0' else '"'
+        return '.{}'.format(frac) if frac != '0' else pandas.np.nan
     except Exception as err:
-        return '"'
+        return pandas.np.nan
 
 
 def boolean(value):
@@ -194,7 +194,13 @@ def dimens_string(row):
     if pandas.isnull(row['Frame Width Inches']) or \
        pandas.isnull(row['Frame Height Inches']):
         return pandas.np.nan
-    return "{win}{wfr} x {hin}{hfr}".format(win=int(row['Frame Width Inches']),
-                                            wfr=row['Frame Width Fraction'],
-                                            hin=int(row['Frame Height Inches']),
-                                            hfr=row['Frame Height Fraction'])
+    win = int(row['Frame Width Inches'])
+    hin = int(row['Frame Height Inches'])
+    wfr = row['Frame Width Fraction']
+    hfr = row['Frame Height Fraction']
+    wfr = '' if pandas.isnull(wfr) else wfr
+    hfr = '' if pandas.isnull(hfr) else hfr
+    return "{win}{wfr}\" x {hin}{hfr}\"".format(win=win,
+                                                wfr=wfr,
+                                                hin=hin,
+                                                hfr=hfr)
