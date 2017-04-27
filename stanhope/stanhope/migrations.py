@@ -154,7 +154,8 @@ class LegacyOrders(Migration):
 
     def read_csv(self, *args, **kwargs):
         frame = super(LegacyOrders, self).read_csv(converters=self.CONVERTERS)
-        frame['Order ID'] = utils.order_link(frame, 'OrderNo', 'CustomerNo')
+        frame['Legacy Order ID'] = \
+            utils.order_link(frame, 'OrderNo', 'CustomerNo')
         return frame
 
 
@@ -210,7 +211,7 @@ class Orders(LegacyOrders):
         'Order Location',
         'Order Status',
         'Delivery Location',
-        'Order ID',
+        'Legacy Order ID',
         'Account Link',
         'Salesperson Link',
         'Legacy Order Link']
@@ -221,11 +222,11 @@ class Orders(LegacyOrders):
                                                    skiprows=1)
         frame['Client'] = 'None'
         frame['Account Link'] = frame['Legacy Customer Number']
-        frame['Order ID'] = utils.order_link(frame,
-                                             'Order Number',
-                                             'Account Link')
+        frame['Legacy Order ID'] = utils.order_link(frame,
+                                                    'Order Number',
+                                                    'Account Link')
         frame['Salesperson Link'] = frame['Salesperson']
-        frame['Legacy Order Link'] = frame['Order ID']
+        frame['Legacy Order Link'] = frame['Legacy Order ID']
         frame.loc[frame['Discount'].isnull(), 'Discount'] = 'No Discount'
         frame.loc[:, 'Delivery Location'] = \
             frame['Delivery Location'].combine_first(frame['Order Location'])
@@ -297,6 +298,7 @@ class Treatments(LegacyOrders):
         'Bin Number',
         'Description',
         'Production Comments',
+        'Account Link',
         'Order Link']
 
     def read_csv(self, *args, **kwargs):
@@ -314,4 +316,5 @@ class Treatments(LegacyOrders):
         frame['Order Link'] = utils.order_link(frame,
                                                'Order Number',
                                                'CustomerNo')
+        frame['Account Link'] = frame['CustomerNo']
         return frame[self.COLUMNS]
