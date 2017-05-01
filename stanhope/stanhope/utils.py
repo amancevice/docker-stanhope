@@ -21,9 +21,14 @@ def export(table, *args, **kwargs):
     return pandas.read_csv(io.BytesIO(out), *args, **kwargs)
 
 
-def account_type(frame):
-    idx = frame['Tax Exempt'] | frame['Credit']
-    return idx.apply(lambda x: 'Institution' if x else 'Personal')
+def account_category(value):
+    return mapping(value.strip(), **{
+        'Artist': 'Artist',
+        'Dealer': 'Dealer',
+        'Employee': 'Employee',
+        'Gallery': 'Gallery',
+        'Other': 'Other',
+        'Retail': 'Retail'})
 
 
 def try_or_nan(func):
@@ -105,7 +110,7 @@ def order_location(value):
 
 
 def salesperson(value):
-    if pandas.isnull(value):
+    if pandas.isnull(value) or not value:
         return 'RS'
     elif value == 'SN':
         return 'SB'

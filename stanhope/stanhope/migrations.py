@@ -42,11 +42,12 @@ class LegacyCustomers(Migration):
 
 class Accounts(LegacyCustomers):
     CONVERTERS = {
-        'Legacy Customer Number': utils.upper,
         'Account': utils.replace_newline,
-        'Tax Exempt': utils.boolean,
+        'Category': utils.account_category,
+        'Credit': utils.boolean,
+        'Legacy Customer Number': utils.upper,
         'Source': utils.source,
-        'Credit': utils.boolean}
+        'Tax Exempt': utils.boolean}
     HEADER = [
         'Legacy Customer Number',
         'Account',
@@ -66,11 +67,11 @@ class Accounts(LegacyCustomers):
         'Email',
         'Deceased']
     COLUMNS = [
-        'Account Type',
+        'Category',
         'Account',
         'Tax Exempt',
         'Credit',
-        'Comment',
+        'Comments',
         'Source',
         'Legacy Customer Number',
         'Legacy Customer Number Link']
@@ -79,10 +80,10 @@ class Accounts(LegacyCustomers):
         frame = super(Accounts, self).read_csv(converters=self.CONVERTERS,
                                                names=self.HEADER,
                                                skiprows=1)
-        frame['Account Type'] = utils.account_type(frame)
         frame['Legacy Customer Number Link'] = frame['Legacy Customer Number']
         frame.loc[:, 'Account'] = \
             frame['Account'].combine_first(frame['Legacy Customer Number'])
+        frame['Comments'] = frame['Comment']
         return frame[self.COLUMNS]
 
 
@@ -189,7 +190,7 @@ class Orders(LegacyOrders):
         'DateCompleted',
         'FrameNo',
         'Discount',
-        'Cust-Client',
+        'Client',
         'Joining',
         'Frame Width',
         'Frame Height',
@@ -220,7 +221,6 @@ class Orders(LegacyOrders):
         frame = super(LegacyOrders, self).read_csv(converters=self.CONVERTERS,
                                                    names=self.HEADER,
                                                    skiprows=1)
-        frame['Client'] = 'None'
         frame['Account Link'] = frame['Legacy Customer Number']
         frame['Legacy Order ID'] = utils.order_link(frame,
                                                     'Order Number',
@@ -230,6 +230,7 @@ class Orders(LegacyOrders):
         frame.loc[frame['Discount'].isnull(), 'Discount'] = 'No Discount'
         frame.loc[:, 'Delivery Location'] = \
             frame['Delivery Location'].combine_first(frame['Order Location'])
+        frame.loc[:, 'Client'] = frame['Client'].fillna('None')
         return frame[self.COLUMNS]
 
 
@@ -239,8 +240,7 @@ class Treatments(LegacyOrders):
         'Frame Join': utils.join,
         'Mat Manufacturer': utils.matmfg,
         'Order Number': utils.upper,
-        'Type': utils.sales_type,
-        'Order Status': utils.status}
+        'Type': utils.sales_type}
     HEADER = [
         'Order Number',
         'OrderDate',
@@ -274,7 +274,6 @@ class Treatments(LegacyOrders):
         'Matting',
         'Fitting']
     COLUMNS = [
-        'Order Status',
         'Type',
         'Quantity',
         'Frame Width Inches',
