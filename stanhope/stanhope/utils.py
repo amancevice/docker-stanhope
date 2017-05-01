@@ -47,7 +47,7 @@ def knackstamp(value):
 
 @try_or_nan
 def upper(value):
-    return value.upper().strip('\n')
+    return value.upper().strip()
 
 
 @try_or_nan
