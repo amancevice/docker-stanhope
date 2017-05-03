@@ -1,0 +1,7 @@
+./stanhope/tests
+./stanhope/tox.ini
+./stanhope/.tox
+./stanhope/.coverage
+./stanhope/.gitignore
+./stanhope/.cache
+./stanhope/*/*.pyc
