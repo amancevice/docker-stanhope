@@ -76,6 +76,7 @@ class Customers(Table):
         frame.loc[:, 'Account'] = \
             frame['Account'].apply(utils.replace_newline)\
                             .combine_first(frame['Legacy Customer Number'])
+        frame['Primary Contact'] = frame['Account']
 
         # Massage fields
         frame.loc[~frame['Category'].isnull(), 'Category'] = \
