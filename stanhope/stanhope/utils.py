@@ -7,19 +7,16 @@ import subprocess
 import pandas
 
 
-def legacy_customer_record(row):
+def legacy_record_iter(row):
+    for key, val in row.iteritems():
+        yield "<tr><td>{key}</td><td>{val}</td></tr>".format(key=key, val=val)
+
+
+def legacy_record(row):
     row = row.replace(False, pandas.np.nan).dropna()
-    if 'Comment' in row and '\n' in row['Comment']:
-        comment = row['Comment']
-        row.drop('Comment', inplace=True)
-        return "<pre>\n{record}\nComment\n{comment}\n</pre>"\
-               .format(record=row.to_string(), comment=comment)
-    return "<pre>\n{record}\n</pre>".format(record=row.to_string())
-
-
-def legacy_order_record(row):
-    row = row.dropna()
-    return "<pre>\n{record}\n</pre>".format(record=row.to_string())
+    row = ''.join(list(legacy_record_iter(row)))
+    tbl = "<table>{row}</table>".format(row=row)
+    return tbl.replace('<', '&lt;').replace('>', '&gt;')
 
 
 def export(table, *args, **kwargs):
