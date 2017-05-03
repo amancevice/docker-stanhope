@@ -105,7 +105,8 @@ class Customers(Table):
         # Rename columns
         frame.rename(inplace=True,
                      columns={'Customer Number': 'Account Link',
-                              'Name': 'Contact'})
+                              'Name': 'Contact',
+                              'Deceased': 'Removed'})
 
         # Massage fields
         frame.loc[:, 'Contact'] = \
