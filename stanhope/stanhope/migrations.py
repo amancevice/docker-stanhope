@@ -1,319 +1,55 @@
 """ Stanhope Framers Migrations. """
 import ardec
 import pandas
-from stanhope import utils
+from .tables import *
 
 
-class Migration(ardec.migration):
-    CONVERTERS = {}
+class StanhopeFramers(ardec.migration):
+    def __init__(self, opened, closed, archived):
+        super(StanhopeFramers, self).__init__()
+        tables = [x for x in [opened, closed, archived] if x]
+        self.customers = Customers()
+        self.frameorders = FrameOrders(*tables)
+        self.accounts = None
+        self.contacts = None
+        self.orders = None
+        self.treatments = None
 
-    def _read_csv_stage(self, table, *args, **kwargs):
-        with ardec.stage("export_{table}".format(table=table)):
-            return utils.export(table, *args, **kwargs)
+    @ardec.stage('load_customers')
+    def load_customers(self):
+        self.customers.load()
 
-    def read_csv(self, *args, **kwargs):
-        kwargs.setdefault('converters', self.CONVERTERS)
-        return pandas.concat([self._read_csv_stage(x, *args, **kwargs)
-                              for x in self.tables])
+    @ardec.stage('load_orders')
+    def load_frameorders(self):
+        self.frameorders.load()
 
-    @staticmethod
+    @ardec.stage('join_records')
+    def join_records(self):
+        customers = self.customers.frame['Customer Number']\
+                        .isin(self.frameorders.frame['CustomerNo'])
+        self.customers.frame = self.customers.frame.loc[customers]
+
+    @ardec.stage('export_accounts')
+    def export_accounts(self):
+        self.accounts = self.customers.accounts()
+
+    @ardec.stage('export_contacts')
+    def export_contacts(self):
+        self.contacts = self.customers.contacts()
+
+    @ardec.stage('export_orders')
+    def export_orders(self):
+        self.orders = self.frameorders.orders()
+
+    @ardec.stage('export_treatments')
+    def export_treatments(self):
+        self.treatments = self.frameorders.treatments()
+
     @ardec.stage('write_csv')
-    def write_csv(frame, path):
-        frame.to_csv(path, index=False, date_format='%m/%d/%Y %H:%M:%S')
-
-    def migrate(self):
-        path = "/data/{name}.csv".format(name=type(self).__name__)
-        frame = self.read_csv()
-        self.write_csv(frame, path)
-        return frame
-
-
-class LegacyCustomers(Migration):
-    CONVERTERS = {
-        'Customer Number': utils.upper,
-        'Date': utils.knackstamp,
-        'Last Order': utils.knackstamp,
-        'Last Update': utils.knackstamp}
-
-    def __init__(self):
-        super(LegacyCustomers, self).__init__()
-        self.tables = ['Customers']
-
-
-class Accounts(LegacyCustomers):
-    CONVERTERS = {
-        'Account': utils.replace_newline,
-        'Category': utils.account_category,
-        'Credit': utils.boolean,
-        'Legacy Customer Number': utils.upper,
-        'Source': utils.source,
-        'Tax Exempt': utils.boolean}
-    HEADER = [
-        'Legacy Customer Number',
-        'Account',
-        'Category',
-        'Address',
-        'City',
-        'State',
-        'Zip',
-        'Telephone',
-        'Credit',
-        'Comment',
-        'Tax Exempt',
-        'Source',
-        'Date',
-        'Last Update',
-        'Last Order',
-        'Email',
-        'Deceased']
-    COLUMNS = [
-        'Category',
-        'Account',
-        'Tax Exempt',
-        'Credit',
-        'Comments',
-        'Source',
-        'Legacy Customer Number',
-        'Legacy Customer Number Link']
-
-    def read_csv(self, *args, **kwargs):
-        frame = super(Accounts, self).read_csv(converters=self.CONVERTERS,
-                                               names=self.HEADER,
-                                               skiprows=1)
-        frame['Legacy Customer Number Link'] = frame['Legacy Customer Number']
-        frame.loc[:, 'Account'] = \
-            frame['Account'].combine_first(frame['Legacy Customer Number'])
-        frame['Comments'] = frame['Comment']
-        return frame[self.COLUMNS]
-
-
-class Contacts(LegacyCustomers):
-    CONVERTERS = {
-        'Legacy Customer Number': utils.upper,
-        'Contact': utils.replace_newline,
-        'Address': utils.replace_newline,
-        'City': utils.replace_newline,
-        'State': utils.replace_newline,
-        'Zip': utils.replace_newline,
-        'Telephone': utils.replace_newline,
-        'Deceased': utils.boolean}
-    HEADER = [
-        'Legacy Customer Number',
-        'Contact',
-        'Category',
-        'Address',
-        'City',
-        'State',
-        'Zip',
-        'Telephone',
-        'Credit',
-        'Comment',
-        'Tax Exempt',
-        'Source',
-        'Date',
-        'Last Update',
-        'Last Order',
-        'Email',
-        'Deceased']
-    COLUMNS = [
-        'Contact',
-        'Email',
-        'Address',
-        'City',
-        'State',
-        'Zip',
-        'Telephone',
-        'Deceased',
-        'Account Link']
-
-    def read_csv(self, *args, **kwargs):
-        frame = super(Contacts, self).read_csv(converters=self.CONVERTERS,
-                                               names=self.HEADER,
-                                               skiprows=1)
-        frame['Account Link'] = frame['Legacy Customer Number']
-        frame.loc[frame['Contact'] == 'Bridget Wilson', 'City'] = 'Boston'
-        return frame[self.COLUMNS]
-
-
-class LegacyOrders(Migration):
-    CONVERTERS = {
-        'CustomerNo': utils.upper,
-        'OrderNo': utils.upper,
-        'DateCompleted': utils.knackstamp,
-        'DueDate': utils.knackstamp,
-        'OrderDate': utils.knackstamp}
-
-    def __init__(self, archived, closed, opened):
-        super(LegacyOrders, self).__init__()
-        self.tables = []
-        if opened:
-            self.tables.append('FrameOrders-Working')
-        if closed:
-            self.tables.append('FrameOrders-Closed')
-        if archived:
-            self.tables.append('FrameOrders-Archive')
-
-    def read_csv(self, *args, **kwargs):
-        frame = super(LegacyOrders, self).read_csv(converters=self.CONVERTERS)
-        frame['Legacy Order ID'] = \
-            utils.order_link(frame, 'OrderNo', 'CustomerNo')
-        return frame
-
-
-class Orders(LegacyOrders):
-    CONVERTERS = {
-        'Delivery Location': utils.delivery_location,
-        'Discount': utils.discount,
-        'Due Date': utils.knackstamp,
-        'Legacy Customer Number': utils.upper,
-        'Order Date': utils.knackstamp,
-        'Order Location': utils.order_location,
-        'Order Number': utils.upper,
-        'Order Status': utils.status,
-        'Salesperson': utils.salesperson}
-    HEADER = [
-        'Order Number',
-        'Order Date',
-        'Due Date',
-        'SalesCatgy',
-        'Legacy Customer Number',
-        'Qty',
-        'TotalSale',
-        'Order Status',
-        'Order Location',
-        'Salesperson',
-        'Delivery Location',
-        'Artist',
-        'Comments',
-        'FrameMfg',
-        'SalesType',
-        'DateCompleted',
-        'FrameNo',
-        'Discount',
-        'Client',
-        'Joining',
-        'Frame Width',
-        'Frame Height',
-        'Mat',
-        'MatMfg',
-        'MatColor',
-        'MattingSize',
-        'Glazing',
-        'ProductionComments',
-        'BinNo',
-        'Matting',
-        'Fitting']
-    COLUMNS = [
-        'Order Number',
-        'Order Date',
-        'Due Date',
-        'Client',
-        'Discount',
-        'Order Location',
-        'Order Status',
-        'Delivery Location',
-        'Legacy Order ID',
-        'Account Link',
-        'Salesperson Link',
-        'Legacy Order Link']
-
-    def read_csv(self, *args, **kwargs):
-        frame = super(LegacyOrders, self).read_csv(converters=self.CONVERTERS,
-                                                   names=self.HEADER,
-                                                   skiprows=1)
-        frame['Account Link'] = frame['Legacy Customer Number']
-        frame['Legacy Order ID'] = utils.order_link(frame,
-                                                    'Order Number',
-                                                    'Account Link')
-        frame['Salesperson Link'] = frame['Salesperson']
-        frame['Legacy Order Link'] = frame['Legacy Order ID']
-        frame.loc[frame['Discount'].isnull(), 'Discount'] = 'No Discount'
-        frame.loc[:, 'Delivery Location'] = \
-            frame['Delivery Location'].combine_first(frame['Order Location'])
-        frame.loc[:, 'Client'] = frame['Client'].fillna('None')
-        return frame[self.COLUMNS]
-
-
-class Treatments(LegacyOrders):
-    CONVERTERS = {
-        'CustomerNo': utils.upper,
-        'Frame Join': utils.join,
-        'Mat Manufacturer': utils.matmfg,
-        'Order Number': utils.upper,
-        'Type': utils.sales_type}
-    HEADER = [
-        'Order Number',
-        'OrderDate',
-        'DueDate',
-        'SalesCatgy',
-        'CustomerNo',
-        'Quantity',
-        'Price',
-        'Order Status',
-        'Location',
-        'SalesPers',
-        'Delivery',
-        'Artist',
-        'Description',
-        'Frame Manufacturer',
-        'Type',
-        'DateCompleted',
-        'Frame Style',
-        'Discount',
-        'Cust-Client',
-        'Frame Join',
-        'Frame Width',
-        'Frame Height',
-        'Mat',
-        'Mat Manufacturer',
-        'Mat Color',
-        'Mat Size',
-        'Glazing',
-        'Production Comments',
-        'Bin Number',
-        'Matting',
-        'Fitting']
-    COLUMNS = [
-        'Type',
-        'Quantity',
-        'Frame Width Inches',
-        'Frame Width Fraction',
-        'Frame Height Inches',
-        'Frame Height Fraction',
-        # 'Frame Manufacturer',
-        'Frame Style',
-        'Frame Join',
-        # 'Frame Strainer',
-        # 'Frame Recess',
-        # 'Frame Buildup',
-        # 'Matting / Mounting',
-        'Mat Manufacturer',
-        # 'Mat Hinge',
-        'Mat Size',
-        'Mat Color',
-        # 'Glazing',
-        'Price',
-        'Artist',
-        'Bin Number',
-        'Description',
-        'Production Comments',
-        'Account Link',
-        'Order Link']
-
-    def read_csv(self, *args, **kwargs):
-        frame = super(LegacyOrders, self).read_csv(converters=self.CONVERTERS,
-                                                   names=self.HEADER,
-                                                   skiprows=1)
-        frame['Frame Width Inches'] = \
-            frame['Frame Width'].apply(utils.inches)
-        frame['Frame Width Fraction'] = \
-            frame['Frame Width'].apply(utils.fraction)
-        frame['Frame Height Inches'] = \
-            frame['Frame Height'].apply(utils.inches)
-        frame['Frame Height Fraction'] = \
-            frame['Frame Height'].apply(utils.fraction)
-        frame['Order Link'] = utils.order_link(frame,
-                                               'Order Number',
-                                               'CustomerNo')
-        frame['Account Link'] = frame['CustomerNo']
-        return frame[self.COLUMNS]
+    def write_csv(self):
+        kwargs = {'index': False, 'date_format': '%m/%d/%Y %H:%M:%S'}
+        path = "/data/{}.csv"
+        self.accounts.to_csv(path.format('Accounts'), **kwargs)
+        self.contacts.to_csv(path.format('Contacts'), **kwargs)
+        self.orders.to_csv(path.format('Orders'), **kwargs)
+        self.treatments.to_csv(path.format('Treatments'), **kwargs)

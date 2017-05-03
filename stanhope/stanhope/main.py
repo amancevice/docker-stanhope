@@ -1,27 +1,27 @@
 """ Stanhope Framers Data Migration """
 import IPython
 import click
-from stanhope.migrations import *
+from . import options
+from .migrations import *
 
 
 @click.command()
-@click.option('-a', '--archived', is_flag=True)
-@click.option('-c', '--closed', is_flag=True)
-@click.option('-i', '--interactive', is_flag=True)
-@click.option('-o', '--opened', is_flag=True)
+@options.ARCHIVED
+@options.CLOSED
+@options.INTERACTIVE
+@options.OPENED
 def stanhope(archived, closed, interactive, opened):
-    with LegacyCustomers() as migration:
-        legacy_customers = migration.migrate()
-    with Accounts() as migration:
-        accounts = migration.migrate()
-    with Contacts() as migration:
-        contacts = migration.migrate()
-    if archived or closed or opened:
-        with LegacyOrders(archived, closed, opened) as migration:
-            legacy_orders = migration.migrate()
-        with Orders(archived, closed, opened) as migration:
-            orders = migration.migrate()
-        with Treatments(archived, closed, opened) as migration:
-            treatments = migration.migrate()
+    """ Stanhope Framers Data Migration """
+    with StanhopeFramers(opened, closed, archived) as mdb:
+        mdb.load_customers()
+        mdb.load_frameorders()
+        mdb.join_records()
+        mdb.export_accounts()
+        mdb.export_contacts()
+        mdb.export_orders()
+        mdb.export_treatments()
+        mdb.write_csv()
+
+    # Interact
     if interactive is True:
         IPython.embed()

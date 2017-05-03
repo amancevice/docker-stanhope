@@ -7,6 +7,10 @@ import subprocess
 import pandas
 
 
+def legacy_record(row):
+    return "<pre>\n{record}\n</pre>".format(record=row.dropna().to_string())
+
+
 def export(table, *args, **kwargs):
     """ Export table from StanhopeFramers.mdb.
 
@@ -55,7 +59,8 @@ def replace_newline(value, replace=r' '):
     return re.subn('[\n\r]+', replace, value)[0]\
              .replace(u'\x0b', replace)\
              .replace(u'\x10', replace)\
-             .strip()
+             .strip()\
+             .strip('`')
 
 
 @try_or_nan
@@ -192,6 +197,5 @@ def boolean(value):
     return value == '1'
 
 
-def order_link(frame, order_col, acct_col):
-    return frame.apply(lambda x: "{}-{}".format(x[order_col], x[acct_col]),
-                       axis=1)
+def legacy_order_id(row):
+    return "{order}-{id}".format(order=row['OrderNo'], id=row.name)
