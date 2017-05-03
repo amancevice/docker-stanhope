@@ -7,8 +7,20 @@ import subprocess
 import pandas
 
 
-def legacy_record(row):
-    return "<pre>\n{record}\n</pre>".format(record=row.dropna().to_string())
+def legacy_customer_record(row):
+    row = row.dropna()
+    try:
+        comment = row['Comment']
+        row.drop('Comment', inplace=True)
+        return "<pre>\n{record}\nComment\n{comment}\n</pre>"\
+               .format(record=row.to_string(), comment=comment)
+    except KeyError:
+        return "<pre>\n{record}\n</pre>".format(record=row.to_string())
+
+
+def legacy_order_record(row):
+    row = row.dropna()
+    return "<pre>\n{record}\n</pre>".format(record=row.to_string())
 
 
 def export(table, *args, **kwargs):

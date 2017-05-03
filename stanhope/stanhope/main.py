@@ -13,13 +13,13 @@ from .migrations import *
 def stanhope(archived, closed, interactive, opened):
     """ Stanhope Framers Data Migration """
     with StanhopeFramers(opened, closed, archived) as mdb:
-        mdb.load_customers()
-        mdb.load_frameorders()
+        customers = mdb.load_customers()
+        frameorders = mdb.load_frameorders()
         mdb.join_records()
-        mdb.export_accounts()
-        mdb.export_contacts()
-        mdb.export_orders()
-        mdb.export_treatments()
+        accounts = mdb.export_accounts()
+        contacts = mdb.export_contacts()
+        orders = mdb.export_orders()
+        treatments = mdb.export_treatments()
         mdb.write_csv()
 
     # Interact

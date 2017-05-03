@@ -17,33 +17,38 @@ class StanhopeFramers(ardec.migration):
 
     @ardec.stage('load_customers')
     def load_customers(self):
-        self.customers.load()
+        return self.customers.load()
 
     @ardec.stage('load_orders')
     def load_frameorders(self):
-        self.frameorders.load()
+        return self.frameorders.load()
 
     @ardec.stage('join_records')
     def join_records(self):
         customers = self.customers.frame['Customer Number']\
                         .isin(self.frameorders.frame['CustomerNo'])
         self.customers.frame = self.customers.frame.loc[customers]
+        return self.customers.frame
 
     @ardec.stage('export_accounts')
     def export_accounts(self):
         self.accounts = self.customers.accounts()
+        return self.accounts
 
     @ardec.stage('export_contacts')
     def export_contacts(self):
         self.contacts = self.customers.contacts()
+        return self.contacts
 
     @ardec.stage('export_orders')
     def export_orders(self):
         self.orders = self.frameorders.orders()
+        return self.orders
 
     @ardec.stage('export_treatments')
     def export_treatments(self):
         self.treatments = self.frameorders.treatments()
+        return self.treatments
 
     @ardec.stage('write_csv')
     def write_csv(self):

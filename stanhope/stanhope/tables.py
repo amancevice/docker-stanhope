@@ -7,8 +7,9 @@ import subprocess
 import pandas
 from stanhope import utils
 
-pandas.set_option('display.max_rows', 100)
-pandas.set_option('display.width', 100)
+pandas.set_option('display.max_rows', 999)
+pandas.set_option('display.width', 999)
+pandas.set_option('display.max_colwidth', 999)
 
 
 class Table(object):
@@ -29,6 +30,7 @@ class Table(object):
             # page['Table'] = table
             frame = frame.append(page)
         self.frame = frame
+        return frame
 
 
 class Customers(Table):
@@ -48,7 +50,7 @@ class Customers(Table):
 
         # Copy legacy record
         frame['Legacy Customer Record'] = \
-            frame.apply(utils.legacy_record, axis=1)
+            frame.apply(utils.legacy_customer_record, axis=1)
 
         # Drop unused columns
         frame.drop(['Address',
@@ -131,7 +133,8 @@ class FrameOrders(Table):
         frame = self.frame.copy()
 
         # Copy legacy record
-        frame['Legacy Order Record'] = frame.apply(utils.legacy_record, axis=1)
+        frame['Legacy Order Record'] = \
+            frame.apply(utils.legacy_order_record, axis=1)
 
         # Add Legacy Order ID
         frame['Legacy Order ID'] = frame.apply(utils.legacy_order_id, axis=1)
