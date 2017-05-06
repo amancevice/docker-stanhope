@@ -227,6 +227,7 @@ class FrameOrders(Table):
                               'FrameNo': 'Frame Style',
                               'FrameMfg': 'Frame Manufacturer',
                               'Joining': 'Frame Join',
+                              'Mat': 'Matting / Mounting',
                               'MatColor': 'Mat Color',
                               'MatMfg': 'Mat Manufacturer',
                               'MattingSize': 'Mat Size',

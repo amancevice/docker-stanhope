@@ -12,14 +12,17 @@ def legacy_customer_record(row):
     if 'Comment' in row and '\n' in row['Comment']:
         comment = row['Comment']
         row.drop('Comment', inplace=True)
-        return "<pre>\n{record}\nComment\n{comment}\n</pre>"\
-               .format(record=row.to_string(), comment=comment)
-    return "<pre>\n{record}\n</pre>".format(record=row.to_string())
+        record = "<pre>{record}Comment{comment}</pre>"\
+                 .format(record=row.to_string(), comment=comment)
+    else:
+        record = "<pre>{record}</pre>".format(record=row.to_string())
+    return record.replace('\n', '<br/>')
 
 
 def legacy_order_record(row):
     row = row.dropna()
-    return "<pre>\n{record}\n</pre>".format(record=row.to_string())
+    record = "<pre>\n{record}\n</pre>".format(record=row.to_string())
+    return record.replace('\n', '<br/>')
 
 
 def export(table, *args, **kwargs):

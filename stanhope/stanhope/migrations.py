@@ -31,10 +31,12 @@ class StanhopeFramers(ardec.migration):
         customers = self.customers.frame['Customer Number'].isin(cust)
         self.customers.frame = \
             self.customers.frame.loc[
-                self.customers.frame['Customer Number'].isin(cust)]
+                self.customers.frame['Customer Number'].isin(cust)]\
+            .reset_index(drop=True)
         self.frameorders.frame = \
             self.frameorders.frame.loc[
-                self.frameorders.frame['CustomerNo'].isin(cust)]
+                self.frameorders.frame['CustomerNo'].isin(cust)]\
+            .reset_index(drop=True)
         return self.customers.frame
 
     @ardec.stage('export_accounts')
