@@ -1,6 +1,8 @@
 """ Stanhope Framers Utils. """
 import fractions
+import hashlib
 import io
+import json
 import re
 import subprocess
 
@@ -23,6 +25,10 @@ def legacy_order_record(row):
     row = row.dropna()
     record = "<pre>\n{record}\n</pre>".format(record=row.to_string())
     return record.replace('\n', '<br/>')
+
+
+def legacy_order_id(row):
+    return hashlib.sha1(row.to_json().encode('utf-8')).hexdigest()
 
 
 def export(table, *args, **kwargs):
@@ -272,7 +278,3 @@ def fraction(value):
 
 def boolean(value):
     return value == '1'
-
-
-def legacy_order_id(row):
-    return "{order}-{id}".format(order=row['OrderNo'], id=row.name)

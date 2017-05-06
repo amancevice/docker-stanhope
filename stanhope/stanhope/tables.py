@@ -128,18 +128,18 @@ class Customers(Table):
 class FrameOrders(Table):
     READ_CSV = {
         'converters': {'CustomerNo': utils.upper, 'OrderNo': utils.upper},
-        'parse_dates': ['DateCompleted', 'DueDate', 'OrderDate']
-    }
+        'parse_dates': ['DateCompleted', 'DueDate', 'OrderDate']}
 
     def orders(self):
         frame = self.frame.copy()
 
-        # Copy legacy record
-        frame['Legacy Order Record'] = \
-            frame.apply(utils.legacy_order_record, axis=1)
-
         # Add Legacy Order ID
         frame['Legacy Order ID'] = frame.apply(utils.legacy_order_id, axis=1)
+
+        # Copy legacy record
+        frame['Legacy Order Record'] = \
+            frame.drop('Legacy Order ID', axis=1)\
+                 .apply(utils.legacy_order_record, axis=1)
 
         # Drop unused columns
         frame.drop(['Artist',
