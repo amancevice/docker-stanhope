@@ -239,12 +239,13 @@ class FrameOrders(Table):
         # Massage fields
         frame.loc[:, 'Frame Join'] = frame['Frame Join'].apply(utils.join)
         frame.loc[:, 'Mat Manufacturer'] = \
-            frame['Mat Manufacturer'].apply(utils.matmfg)
+            frame['Mat Manufacturer'].apply(utils.matmfg).fillna('None')
         frame.loc[:, 'Frame Manufacturer'] = \
-            frame['Frame Manufacturer'].apply(utils.framemfg)
+            frame['Frame Manufacturer'].apply(utils.framemfg).fillna('None')
         frame.loc[:, 'Matting / Mounting'] = \
-            frame['Matting / Mounting'].apply(utils.mat)
-        frame.loc[:, 'Glazing'] = frame['Glazing'].apply(utils.glazing)
+            frame['Matting / Mounting'].apply(utils.mat).fillna('None')
+        frame.loc[:, 'Glazing'] = \
+            frame['Glazing'].apply(utils.glazing).fillna('None')
         frame.loc[:, 'Type'] = frame['Type'].apply(utils.sales_type)
 
         # Add dimensions
