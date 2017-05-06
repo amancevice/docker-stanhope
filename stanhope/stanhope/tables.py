@@ -241,7 +241,7 @@ class FrameOrders(Table):
         # Massage fields
         frame.loc[:, 'Frame Join'] = frame['Frame Join'].apply(utils.join)
         frame.loc[:, 'Mat Manufacturer'] = \
-            frame['Mat Manufacturer'].apply(utils.matmfg)
+            frame['Mat Manufacturer'].apply(utils.matmfg).fillna('None')
         frame.loc[:, 'Type'] = frame['Type'].apply(utils.sales_type)
 
         # Add dimensions

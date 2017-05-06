@@ -25,9 +25,16 @@ class StanhopeFramers(ardec.migration):
 
     @ardec.stage('join_records')
     def join_records(self):
-        customers = self.customers.frame['Customer Number']\
-                        .isin(self.frameorders.frame['CustomerNo'])
-        self.customers.frame = self.customers.frame.loc[customers]
+        frame_cust = self.frameorders.frame['CustomerNo']
+        all_cust = self.customers.frame['Customer Number']
+        cust = set(frame_cust) & set(all_cust)
+        customers = self.customers.frame['Customer Number'].isin(cust)
+        self.customers.frame = \
+            self.customers.frame.loc[
+                self.customers.frame['Customer Number'].isin(cust)]
+        self.frameorders.frame = \
+            self.frameorders.frame.loc[
+                self.frameorders.frame['CustomerNo'].isin(cust)]
         return self.customers.frame
 
     @ardec.stage('export_accounts')
