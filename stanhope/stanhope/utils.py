@@ -147,24 +147,10 @@ def join(value):
 
 def matmfg(value):
     return mapping(value, **{
-        'ALPHA/RISING': pandas.np.nan,
         'Alpha': 'Alpha',
-        'FC': pandas.np.nan,
-        'Linen': pandas.np.nan,
-        'Linen/rag': pandas.np.nan,
-        'Linen/rising': pandas.np.nan,
-        'MASONITE': pandas.np.nan,
-        'Other': pandas.np.nan,
         'Pongee Silk': 'Pongee',
-        'Provided': pandas.np.nan,
-        'RISING/ALPHA': pandas.np.nan,
         'Rising': 'Rising',
-        'SPO': pandas.np.nan,
-        'Shantung Silk': 'Shantung',
-        'customer mats': pandas.np.nan,
-        'fome core': pandas.np.nan,
-        'provided': pandas.np.nan,
-        'rising/alpha': pandas.np.nan})
+        'Shantung Silk': 'Shantung'})
 
 
 def sales_type(value):
