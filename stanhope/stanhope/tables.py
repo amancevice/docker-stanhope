@@ -203,17 +203,13 @@ class FrameOrders(Table):
         frame['Order Link'] = frame.apply(utils.legacy_order_id, axis=1)
 
         # Drop unused columns
-        frame.drop(['Artist',
-                    'Cust-Client',
+        frame.drop(['Cust-Client',
                     'DateCompleted',
                     'Delivery',
                     'Discount',
                     'DueDate',
                     'Fitting',
-                    'FrameMfg',
-                    'Glazing',
                     'Location',
-                    'Mat',
                     'Matting',
                     'OrderDate',
                     'OrderNo',
@@ -229,6 +225,7 @@ class FrameOrders(Table):
                               'Comments': 'Description',
                               'CustomerNo': 'Account Link',
                               'FrameNo': 'Frame Style',
+                              'FrameMfg': 'Frame Manufacturer',
                               'Joining': 'Frame Join',
                               'MatColor': 'Mat Color',
                               'MatMfg': 'Mat Manufacturer',
@@ -241,7 +238,10 @@ class FrameOrders(Table):
         # Massage fields
         frame.loc[:, 'Frame Join'] = frame['Frame Join'].apply(utils.join)
         frame.loc[:, 'Mat Manufacturer'] = \
-            frame['Mat Manufacturer'].apply(utils.matmfg).fillna('None')
+            frame['Mat Manufacturer'].apply(utils.matmfg)
+        frame.loc[:, 'Frame Manufacturer'] = \
+            frame['Frame Manufacturer'].apply(utils.framemfg)
+        frame.loc[:, 'Glazing'] = frame['Glazing'].apply(utils.glazing)
         frame.loc[:, 'Type'] = frame['Type'].apply(utils.sales_type)
 
         # Add dimensions

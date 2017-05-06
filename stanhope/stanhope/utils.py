@@ -145,12 +145,89 @@ def join(value):
     return mapping(value, Nailed='Nailed', Splined='Splined')
 
 
+def framemfg(value):
+    return mapping(value, **{
+        # '': 'Don Mar',
+        # '': 'Frama',
+        'AMCI': 'AMCI',
+        'AMPF': 'AMPF',
+        'AOR': 'AOR',
+        'BAF/STANHOPE': 'Boston Art Framers,Stanhope',
+        'BOSTON ART FRAM': 'Boston Art Framers',
+        'Boston Art Fram': 'Boston Art Framers',
+        'CDNV': 'CDNV',
+        'CJ': 'CJ',
+        'CMI': 'CMI',
+        'DECOR': 'Décor',
+        'DÉCOR': 'Décor',
+        'FEINMAN': 'Feinman',
+        'LJ': 'LJ',
+        'MAX': 'MAX',
+        'NEW LOOK': 'New Look',
+        'NIELSEN': 'Nielsen',
+        'OEM': 'OEM',
+        'OMEGA': 'Omega',
+        'OTHER': 'Other',
+        'PRESTO': 'Presto',
+        'PROVIDED': 'Provided',
+        'QUALITY': 'Quality',
+        'ROMA': 'Roma',
+        'SMALL': 'Small',
+        'STANHOPE': 'Stanhope',
+        'STUDIO': 'Studio',
+        'TURNER': 'Turner',
+        'UFP': 'UFP',
+        'UPF': 'UFP',
+        'décor': 'Décor'})
+
+
+def mat(value):
+    return mapping(value, **{
+        # '': 'Cameo Mat',
+        # '': 'Double Mat',
+        # '': 'Mat Float',
+        '4 Ply Book': '4 Ply Book',
+        '8 Ply Book': '8 Ply Book',
+        'CUSTOMER': 'Existing',
+        'Cold Mount': 'Cold Mount',
+        'Dry Mount': 'Dry Mount',
+        'Fabric Float': 'Fabric Float',
+        'Fabric Mat': 'Fabric Mat',
+        'Float': 'Float',
+        'n/a': pandas.np.nan})
+
+
 def matmfg(value):
     return mapping(value, **{
         'Alpha': 'Alpha',
         'Pongee Silk': 'Pongee',
         'Rising': 'Rising',
         'Shantung Silk': 'Shantung'})
+
+
+def glazing(value):
+    return mapping(value, **{
+        'CUSTOMER GLASS': 'Provided',
+        'CUSTOMER PLEXI': '',
+        'CUSTOMER': 'Provided',
+        'CUSTOMER': 'Provided',
+        'Cons Clear': 'Conservation Clear',
+        'Customer Plexi': 'Provided',
+        'Customer': 'Provided',
+        'Museum Glass': 'Museum Glass',
+        'NO GLAZING': pandas.np.nan,
+        'NONE': pandas.np.nan,
+        'None': pandas.np.nan,
+        'OP3 Plexi': 'Optium Museum Plexi',
+        'Optium Museum Plexi': 'Optium Museum Plexi',
+        'Provided': 'Provided',
+        'REG Plexi': 'Regular Plexi',
+        'Reg Glass': 'Regular Glass',
+        'Reg Plexi': 'Regular Plexi',
+        'n/a': pandas.np.nan,
+        'none': pandas.np.nan,
+        'prov': 'Provided',
+        'provided': 'Provided'})
 
 
 def sales_type(value):
