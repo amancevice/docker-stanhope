@@ -84,6 +84,8 @@ class Customers(Table):
                 utils.account_category)
         frame.loc[~frame['Source'].isnull(), 'Source'] = \
             frame.loc[~frame['Source'].isnull(), 'Source'].apply(utils.source)
+        frame.loc[:, 'Comments'] = \
+            frame['Comments'].apply(lambda x: utils.replace_newline(x, '\n'))
 
         # Return
         return frame
@@ -191,7 +193,6 @@ class FrameOrders(Table):
         frame.loc[frame['Discount'].isnull(), 'Discount'] = 'No Discount'
         frame.loc[:, 'Delivery Location'] = \
             frame['Delivery Location'].combine_first(frame['Order Location'])
-        frame.loc[:, 'Client'] = frame['Client'].fillna('None')
 
         # Return
         return frame

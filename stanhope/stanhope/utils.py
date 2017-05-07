@@ -11,20 +11,22 @@ import pandas
 
 def legacy_customer_record(row):
     row = row.replace(False, pandas.np.nan).dropna()
-    if 'Comment' in row and '\n' in row['Comment']:
+    if 'Comment' in row and re.search(r'[\r\n]', row['Comment']):
         comment = row['Comment']
         row.drop('Comment', inplace=True)
         record = "<pre>{record}Comment{comment}</pre>"\
                  .format(record=row.to_string(), comment=comment)
     else:
         record = "<pre>{record}</pre>".format(record=row.to_string())
-    return record.replace('\n', '<br/>')
+    record = record.replace(u'\x0b', '').replace(u'\x10', '')
+    return re.subn(r'[\r\n]', '<br/>', record)[0]
 
 
 def legacy_order_record(row):
     row = row.dropna()
-    record = "<pre>\n{record}\n</pre>".format(record=row.to_string())
-    return record.replace('\n', '<br/>')
+    rec = row.to_string().replace(u'\x0b', '').replace(u'\x10', '')
+    record = "<pre>\n{record}\n</pre>".format(record=rec)
+    return re.subn(r'[\r\n]', '<br/>', record)[0]
 
 
 def legacy_order_id(row):
