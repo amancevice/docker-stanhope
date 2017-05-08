@@ -190,7 +190,6 @@ class FrameOrders(Table):
             frame['Order Status'].apply(utils.status)
         frame.loc[:, 'Salesperson Link'] = \
             frame['Salesperson Link'].apply(utils.salesperson)
-        frame.loc[frame['Discount'].isnull(), 'Discount'] = 'No Discount'
         frame.loc[:, 'Delivery Location'] = \
             frame['Delivery Location'].combine_first(frame['Order Location'])
 
