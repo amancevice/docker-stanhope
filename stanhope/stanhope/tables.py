@@ -233,7 +233,7 @@ class FrameOrders(Table):
                               'MattingSize': 'Mat Size',
                               'ProductionComments': 'Production Comments',
                               'Qty': 'Quantity',
-                              'SalesType': 'Type',
+                              'SalesType': 'Treatment',
                               'TotalSale': 'Price'})
 
         # Massage fields
@@ -246,7 +246,7 @@ class FrameOrders(Table):
             frame['Matting / Mounting'].apply(utils.mat)
         frame.loc[:, 'Glazing'] = \
             frame['Glazing'].apply(utils.glazing)
-        frame.loc[:, 'Type'] = frame['Type'].apply(utils.sales_type)
+        frame.loc[:, 'Treatment'] = frame['Treatment'].apply(utils.sales_type)
 
         # Add dimensions
         frame['Frame Width Inches'] = \
