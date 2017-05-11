@@ -229,7 +229,7 @@ def glazing(value):
         'NO GLAZING': pandas.np.nan,
         'NONE': pandas.np.nan,
         'None': pandas.np.nan,
-        'OP3 Plexi': 'Optium Museum Plexi',
+        'OP3 Plexi': 'OP3 Plexi',
         'Optium Museum Plexi': 'Optium Museum Plexi',
         'Provided': 'Provided',
         'REG Plexi': 'Regular Plexi',
