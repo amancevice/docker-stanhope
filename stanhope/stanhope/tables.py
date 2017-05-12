@@ -212,6 +212,7 @@ class FrameOrders(Table):
 
         # Drop unused columns
         frame.drop(['Cust-Client',
+                    'CustomerNo',
                     'DateCompleted',
                     'Delivery',
                     'Discount',
@@ -231,7 +232,6 @@ class FrameOrders(Table):
         frame.rename(inplace=True,
                      columns={'BinNo': 'Bin Number',
                               'Comments': 'Description',
-                              'CustomerNo': 'Account Link',
                               'FrameNo': 'Frame Style',
                               'FrameMfg': 'Frame Manufacturer',
                               'Joining': 'Frame Join',
