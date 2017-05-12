@@ -13,7 +13,7 @@ CLOSED = click.option('-c', '--closed',
                       help='Migrate FrameOrders-Closed',
                       is_flag=True)
 EPOCH = click.option('-@', '--epoch',
-                     default='2012-01-01',
+                     default='2015-01-01',
                      help='Earliest migrated Order Date')
 INTERACTIVE = click.option('-i', '--interactive', is_flag=True)
 OPENED = click.option('-o', '--opened',

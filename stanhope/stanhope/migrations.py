@@ -85,4 +85,4 @@ class StanhopeFramers(ardec.migration):
             ('Orders', '{:,}'.format(len(self.orders))),
             ('Treatments', '{:,}'.format(len(self.treatments))),
             ('Total', '{:,}'.format(total))]))
-        print(pandas.DataFrame({self.epoch: serie}))
+        print("\n{}\n".format(pandas.DataFrame({self.epoch: serie})))

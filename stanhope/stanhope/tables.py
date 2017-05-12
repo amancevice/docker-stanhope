@@ -48,9 +48,12 @@ class Customers(Table):
     def accounts(self):
         frame = self.frame.copy()
 
+        # Add Legacy ID
+        frame['Legacy ID'] = frame.apply(utils.legacy_id, axis=1)
+
         # Copy legacy record
-        frame['Legacy Customer Record'] = \
-            frame.apply(utils.legacy_customer_record, axis=1)
+        frame['Legacy Record'] = frame.drop('Legacy ID', axis=1)\
+                                      .apply(utils.legacy_record, axis=1)
 
         # Drop unused columns
         frame.drop(['Address',
@@ -92,6 +95,9 @@ class Customers(Table):
 
     def contacts(self):
         frame = self.frame.copy()
+
+        # Add Legacy ID
+        frame['Legacy ID'] = frame.apply(utils.legacy_id, axis=1)
 
         # Drop unused columns
         frame.drop(['Category',
@@ -135,13 +141,12 @@ class FrameOrders(Table):
     def orders(self):
         frame = self.frame.copy()
 
-        # Add Legacy Order ID
-        frame['Legacy Order ID'] = frame.apply(utils.legacy_order_id, axis=1)
+        # Add Legacy ID
+        frame['Legacy ID'] = frame.apply(utils.legacy_id, axis=1)
 
         # Copy legacy record
-        frame['Legacy Order Record'] = \
-            frame.drop('Legacy Order ID', axis=1)\
-                 .apply(utils.legacy_order_record, axis=1)
+        frame['Legacy Record'] = frame.drop('Legacy ID', axis=1)\
+                                      .apply(utils.legacy_record, axis=1)
 
         # Drop unused columns
         frame.drop(['Artist',
@@ -199,8 +204,11 @@ class FrameOrders(Table):
     def treatments(self):
         frame = self.frame.copy()
 
+        # Add Legacy ID
+        frame['Legacy ID'] = frame.apply(utils.legacy_id, axis=1)
+
         # Add Legacy Order ID
-        frame['Order Link'] = frame.apply(utils.legacy_order_id, axis=1)
+        frame['Order Link'] = frame['Legacy ID']
 
         # Drop unused columns
         frame.drop(['Cust-Client',
