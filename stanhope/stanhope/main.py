@@ -8,20 +8,24 @@ from .migrations import *
 @click.command()
 @options.ARCHIVED
 @options.CLOSED
+@options.EPOCH
 @options.INTERACTIVE
 @options.OPENED
-def stanhope(archived, closed, interactive, opened):
+def stanhope(archived, closed, epoch, interactive, opened):
     """ Stanhope Framers Data Migration """
-    with StanhopeFramers(opened, closed, archived) as mdb:
+    with StanhopeFramers(opened, closed, archived, epoch) as mdb:
         customers = mdb.load_customers()
         frameorders = mdb.load_frameorders()
+        mdb.time_filter()
         mdb.join_records()
         accounts = mdb.export_accounts()
         contacts = mdb.export_contacts()
         orders = mdb.export_orders()
         treatments = mdb.export_treatments()
-        mdb.write_csv()
+        mdb.report()
 
-    # Interact
-    if interactive is True:
-        IPython.embed()
+        # Interact
+        if interactive is True:
+            IPython.embed()
+
+        mdb.write_csv()
