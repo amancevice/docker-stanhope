@@ -23,9 +23,7 @@ def stanhope(archived, closed, epoch, interactive, opened):
         orders = mdb.export_orders()
         treatments = mdb.export_treatments()
         mdb.report()
-
-        # Interact
-        if interactive is True:
-            IPython.embed()
-
         mdb.write_csv()
+
+    if interactive is True:
+        IPython.embed()

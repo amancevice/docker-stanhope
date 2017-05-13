@@ -136,7 +136,8 @@ def status(value):
         'O': 'Open',
         'C': 'Closed',
         'A': 'Closed',
-        'X': 'Closed'})
+        'X': 'Closed',
+        'V': 'Void'})
 
 
 def join(value):
