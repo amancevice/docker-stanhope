@@ -2,7 +2,6 @@
 import fractions
 import hashlib
 import io
-import json
 import re
 import subprocess
 

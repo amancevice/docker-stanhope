@@ -2,7 +2,7 @@
 import IPython
 import click
 from . import options
-from .migrations import *
+from .migrations import StanhopeFramers
 
 
 @click.command()
@@ -10,14 +10,15 @@ from .migrations import *
 @options.CLOSED
 @options.EPOCH
 @options.INTERACTIVE
+@options.JOIN
 @options.OPENED
-def stanhope(archived, closed, epoch, interactive, opened):
+def stanhope(archived, closed, epoch, interactive, join, opened):
     """ Stanhope Framers Data Migration """
-    with StanhopeFramers(opened, closed, archived, epoch) as mdb:
+    with StanhopeFramers(opened, closed, archived) as mdb:
         customers = mdb.load_customers()
         frameorders = mdb.load_frameorders()
-        mdb.time_filter()
-        mdb.join_records()
+        mdb.time_filter(epoch)
+        mdb.join_records(join)
         accounts = mdb.export_accounts()
         contacts = mdb.export_contacts()
         orders = mdb.export_orders()

@@ -3,11 +3,12 @@ import collections
 
 import ardec
 import pandas
-from .tables import *
+from .tables import Customers
+from .tables import FrameOrders
 
 
 class StanhopeFramers(ardec.migration):
-    def __init__(self, opened, closed, archived, epoch):
+    def __init__(self, opened, closed, archived):
         super(StanhopeFramers, self).__init__()
         tables = [x for x in [opened, closed, archived] if x]
         self.customers = Customers()
@@ -16,7 +17,6 @@ class StanhopeFramers(ardec.migration):
         self.contacts = None
         self.orders = None
         self.treatments = None
-        self.epoch = epoch
 
     @ardec.stage('load_customers')
     def load_customers(self):
@@ -27,24 +27,26 @@ class StanhopeFramers(ardec.migration):
         return self.frameorders.load()
 
     @ardec.stage('time_filter')
-    def time_filter(self):
-        frameorders = self.frameorders.frame.copy().set_index('OrderDate')
-        frameorders = frameorders[self.epoch:]
-        self.frameorders.frame = frameorders.reset_index()
+    def time_filter(self, epoch=None):
+        if epoch:
+            frameorders = self.frameorders.frame.copy().set_index('OrderDate')
+            frameorders = frameorders[epoch:]
+            self.frameorders.frame = frameorders.reset_index()
 
     @ardec.stage('join_records')
-    def join_records(self):
+    def join_records(self, join=False):
         frame_cust = self.frameorders.frame['CustomerNo']
         all_cust = self.customers.frame['Customer Number']
         cust = set(frame_cust) & set(all_cust)
-        self.customers.frame = \
-            self.customers.frame.loc[
-                self.customers.frame['Customer Number'].isin(cust)]\
-            .reset_index(drop=True)
-        self.frameorders.frame = \
-            self.frameorders.frame.loc[
-                self.frameorders.frame['CustomerNo'].isin(cust)]\
-            .reset_index(drop=True)
+        if join:
+            self.customers.frame = \
+                self.customers.frame.loc[
+                    self.customers.frame['Customer Number'].isin(cust)]\
+                .reset_index(drop=True)
+            self.frameorders.frame = \
+                self.frameorders.frame.loc[
+                    self.frameorders.frame['CustomerNo'].isin(cust)]\
+                .reset_index(drop=True)
 
     @ardec.stage('export_accounts')
     def export_accounts(self):
@@ -85,4 +87,4 @@ class StanhopeFramers(ardec.migration):
             ('Orders', '{:,}'.format(len(self.orders))),
             ('Treatments', '{:,}'.format(len(self.treatments))),
             ('Total', '{:,}'.format(total))]))
-        print("\n{}\n".format(pandas.DataFrame({self.epoch: serie})))
+        print("\n{}\n".format(serie.to_string()))

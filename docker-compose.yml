@@ -1,8 +1,8 @@
-version: '2'
+version: '3'
 services:
   stanhope:
     image: amancevice/stanhope
-    # build: .
+    build: .
     volumes:
       - ~/Google Drive/Stanhope:/data
       - ./stanhope:/stanhope
