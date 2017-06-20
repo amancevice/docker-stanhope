@@ -4,9 +4,9 @@ FROM amancevice/pandas:0.20.2-python3
 RUN apt-get update && \
     apt-get install -y mdbtools && \
     pip install \
-        IPython==5.4.1 \
+        ardec==0.0.3 \
         click==6.7.0 \
-        ardec==0.0.3 && \
+        ipython==5.4.1 && \
     useradd -b /home -U -m stanhope
 
 # Set up app ENV
