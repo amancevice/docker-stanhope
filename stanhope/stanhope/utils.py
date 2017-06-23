@@ -47,7 +47,7 @@ def try_or_nan(func):
     def trywrap(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except:
+        except Exception:
             return pandas.np.nan
     return trywrap
 
