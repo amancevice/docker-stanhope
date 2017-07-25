@@ -1,16 +1,13 @@
-FROM amancevice/pandas:0.20.2-python3
+FROM amancevice/pandas:0.20.3-python3
 
 # Install dependencies & add stanhope user
 RUN apt-get update && \
     apt-get install -y mdbtools && \
-    pip install \
-        ardec==0.0.3 \
-        click==6.7.0 \
-        ipython==5.4.1 && \
+    pip install ardec click ipython && \
     useradd -b /home -U -m stanhope
 
 # Set up app ENV
-VOLUME /data
+VOLUME /data /stanhope
 WORKDIR /data
 
 # Install app
